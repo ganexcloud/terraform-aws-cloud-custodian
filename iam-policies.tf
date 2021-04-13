@@ -11,6 +11,7 @@ data "aws_iam_policy_document" "iam_policy" {
       "events:PutTargets",
       "events:DescribeRule",
       "events:ListTargetsByRule",
+      "events:DeleteRule",
       "iam:PassRole",
       "lambda:GetFunction",
       "lambda:CreateFunction",
@@ -23,6 +24,7 @@ data "aws_iam_policy_document" "iam_policy" {
       "lambda:InvokeFunction",
       "lambda:UpdateFunctionConfiguration",
       "lambda:UpdateAlias",
+      "events:RemoveTargets",
       "lambda:UpdateFunctionCode",
       "lambda:AddPermission",
       "lambda:DeleteAlias",
@@ -47,6 +49,20 @@ data "aws_iam_policy_document" "iam_policy" {
       "${aws_s3_bucket.this.arn}",
       "${aws_s3_bucket.this.arn}/*"
     ]
+  }
+
+  dynamic "statement" {
+    for_each = var.ses_arn != null ? list(1) : []
+
+    content {
+      actions = [
+        "ses:SendEmail",
+        "ses:SendRawEmail"
+      ]
+      resources = [
+        var.ses_arn
+      ]
+    }
   }
 }
 
@@ -242,18 +258,18 @@ data "aws_iam_policy_document" "lambda_policy" {
       aws_sqs_queue.dlq.arn
     ]
   }
-}
 
-data "aws_iam_policy_document" "lambda_policy_ses" {
-  count = var.create_lambda_role && var.ses_arn != null ? 1 : 0
-  statement {
-    actions = [
-      "ses:SendEmail",
-      "ses:SendRawEmail"
-    ]
+  dynamic "statement" {
+    for_each = var.ses_arn != null ? list(1) : []
 
-    resources = [
-      var.ses_arn
-    ]
+    content {
+      actions = [
+        "ses:SendEmail",
+        "ses:SendRawEmail"
+      ]
+      resources = [
+        var.ses_arn
+      ]
+    }
   }
 }

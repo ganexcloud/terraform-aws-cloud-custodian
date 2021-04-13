@@ -74,22 +74,10 @@ resource "aws_iam_policy" "lambda" {
   policy = data.aws_iam_policy_document.lambda_policy.json
 }
 
-resource "aws_iam_policy" "lambda_ses" {
-  count  = var.create_lambda_role && var.ses_arn != null ? 1 : 0
-  name   = "${var.name}-lambda-execution-ses"
-  policy = data.aws_iam_policy_document.lambda_policy_ses[0].json
-}
-
 resource "aws_iam_role_policy_attachment" "lambda" {
   count      = var.create_lambda_role ? 1 : 0
   role       = aws_iam_role.lambda[0].name
   policy_arn = aws_iam_policy.lambda[0].arn
-}
-
-resource "aws_iam_role_policy_attachment" "lambda_ses" {
-  count      = var.create_lambda_role && var.ses_arn != null ? 1 : 0
-  role       = aws_iam_role.lambda[0].name
-  policy_arn = aws_iam_policy.lambda_ses[0].arn
 }
 
 resource "aws_iam_policy" "lambda_extra_policy" {
