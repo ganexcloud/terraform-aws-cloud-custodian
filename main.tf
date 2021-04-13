@@ -1,298 +1,106 @@
 # Iam User
 resource "aws_iam_user" "this" {
+  count         = var.create_iam_user ? 1 : 0
   name          = var.name
   path          = "/"
   force_destroy = false
 }
 
 resource "aws_iam_access_key" "this" {
-  user = aws_iam_user.this.name
+  count = var.create_iam_user ? 1 : 0
+  user  = aws_iam_user.this[0].name
 }
 
 resource "aws_iam_user_policy" "this" {
+  count  = var.create_iam_user ? 1 : 0
   name   = var.name
   user   = var.name
   policy = data.aws_iam_policy_document.iam_policy.json
 }
 
-data "aws_iam_policy_document" "iam_policy" {
-  statement {
-    actions = [
-      "cloudwatch:PutMetricData",
-      "ec2:DescribeNetworkInterfaces",
-      "ec2:DeleteNetworkInterface",
-      "ec2:CreateNetworkInterface",
-      "ec2:DescribeRegions",
-      "events:PutRule",
-      "events:PutTargets",
-      "events:DescribeRule",
-      "events:ListTargetsByRule",
-      "iam:PassRole",
-      "lambda:GetFunction",
-      "lambda:CreateFunction",
-      "lambda:TagResource",
-      "lambda:CreateEventSourceMapping",
-      "lambda:UntagResource",
-      "lambda:PutFunctionConcurrency",
-      "lambda:DeleteFunction",
-      "lambda:UpdateEventSourceMapping",
-      "lambda:InvokeFunction",
-      "lambda:UpdateFunctionConfiguration",
-      "lambda:UpdateAlias",
-      "lambda:UpdateFunctionCode",
-      "lambda:AddPermission",
-      "lambda:DeleteAlias",
-      "lambda:DeleteFunctionConcurrency",
-      "lambda:DeleteEventSourceMapping",
-      "lambda:RemovePermission",
-      "lambda:CreateAlias",
-      "lambda:ListFunctions",
-      "logs:CreateLogStream",
-      "logs:PutLogEvents",
-      "logs:CreateLogGroup",
-      "logs:DescribeLogGroups"
-    ]
-    resources = ["*"]
-  }
-  statement {
-    actions = [
-      "s3:*"
-    ]
-    resources = [
-      "${aws_s3_bucket.this.arn}",
-      "${aws_s3_bucket.this.arn}/*"
-    ]
-  }
+resource "aws_iam_policy" "user_extra_policy" {
+  count  = var.create_iam_user && var.user_extra_policy != null ? 1 : 0
+  name   = "${var.name}-user-extra-policy"
+  policy = var.user_extra_policy
 }
 
-resource "aws_iam_policy" "iam_extra_policy" {
-  count  = var.iam_extra_policy != null ? 1 : 0
-  name   = "${var.name}-iam-extra-policy"
-  policy = var.iam_extra_policy
+resource "aws_iam_policy_attachment" "user_extra_policy_attachment" {
+  count      = var.create_iam_user && var.user_extra_policy != null ? 1 : 0
+  name       = aws_iam_user.this[0].name
+  policy_arn = aws_iam_policy.user_extra_policy[0].arn
 }
 
-resource "aws_iam_policy_attachment" "iam_extra_policy_attachment" {
-  count      = var.iam_extra_policy != null ? 1 : 0
-  name       = aws_iam_user.this.name
-  policy_arn = aws_iam_policy.iam_extra_policy[0].arn
+# IAM Role
+resource "aws_iam_role" "this" {
+  count              = var.create_iam_role ? 1 : 0
+  name               = var.name
+  assume_role_policy = data.aws_iam_policy_document.iam_assume_role.json
+}
+
+resource "aws_iam_policy" "this" {
+  count  = var.create_iam_role ? 1 : 0
+  name   = var.name
+  policy = data.aws_iam_policy_document.iam_policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "this" {
+  count      = var.create_iam_role ? 1 : 0
+  role       = aws_iam_role.this[0].name
+  policy_arn = aws_iam_policy.this[0].arn
+}
+
+resource "aws_iam_policy" "role_extra_policy" {
+  count  = var.create_iam_role && var.role_extra_policy != null ? 1 : 0
+  name   = "${var.name}-lambda-extra-policy"
+  policy = var.role_extra_policy
+}
+
+resource "aws_iam_role_policy_attachment" "role_extra_policy_attachment" {
+  count      = var.create_iam_role && var.role_extra_policy != null ? 1 : 0
+  role       = aws_iam_role.this[0].name
+  policy_arn = aws_iam_policy.role_extra_policy[0].arn
 }
 
 # Lambda Role
 resource "aws_iam_role" "lambda" {
+  count              = var.create_lambda_role ? 1 : 0
   name               = "${var.name}-${data.aws_region.current.name}-lambdaRole"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
 }
 
-data "aws_iam_policy_document" "lambda_assume_role" {
-  statement {
-    effect  = "Allow"
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["lambda.amazonaws.com"]
-    }
-  }
-}
-
-data "aws_iam_policy_document" "lambda_policy" {
-  statement {
-    actions = [
-      "health:DescribeEvents",
-      "health:DescribeAffectedEntities",
-      "health:DescribeEventDetails",
-      "lambda:DeleteFunction",
-      "lambda:GetPolicy",
-      "lambda:RemovePermission",
-      "lambda:TagResource",
-      "lambda:UntagResource",
-      "lambda:InvokeFunction",
-      "cloudtrail:DescribeTrails",
-      "cloudtrail:GetEventSelectors",
-      "cloudtrail:GetTrailStatus",
-      "config:DescribeDeliveryChannels",
-      "config:DescribeConfigurationRecorders",
-      "config:DescribeConfigurationRecorderStatus",
-      "config:GetResourceConfigHistory",
-      "support:DescribeTrustedAdvisorCheckResult",
-      "support:RefreshTrustedAdvisorCheck",
-      "shield:DescribeSubscription",
-      "shield:DeleteSubscription",
-      "ec2:AssociateIamInstanceProfile",
-      "ec2:CreateSnapshot",
-      "ec2:CreateTags",
-      "ec2:CopySnapshot",
-      "ec2:CreateSnapshot",
-      "ec2:Describe*",
-      "tag:TagResources",
-      "tag:UntagResources",
-      "waf-regional:AssociateWebACL",
-      "waf-regional:ListResourcesForWebACL",
-      "waf-regional:ListWebACLs",
-      "elasticloadbalancing:AddTags",
-      "elasticloadbalancing:ApplySecurityGroupsToLoadBalancer",
-      "elasticloadbalancing:DescribeLoadBalancerAttributes",
-      "elasticloadbalancing:DescribeLoadBalancerPolicies",
-      "elasticloadbalancing:DescribeListeners",
-      "elasticloadbalancing:DescribeTargetGroups",
-      "elasticloadbalancing:RemoveTags",
-      "elasticloadbalancing:SetLoadBalancerPoliciesOfListener",
-      "autoscaling:CreateOrUpdateTags",
-      "autoscaling:DeleteTags",
-      "autoscaling:SuspendProcesses",
-      "autoscaling:ResumeProcesses",
-      "autoscaling:Describe*",
-      "cloudfront:GetDistributionConfig",
-      "cloudfront:GetStreamingDistributionConfig",
-      "cloudfront:UpdateStreamingDistribution",
-      "waf:ListWebACLs",
-      "cloudwatch:DeleteAlarms",
-      "cloudwatch:DescribeAlarmsForMetric",
-      "cloudwatch:GetMetricStatistics",
-      "cloudWatch:PutMetricData",
-      "logs:DeleteLogGroup",
-      "logs:DescribeLogStreams",
-      "logs:PutRetentionPolicy",
-      "logs:DescribeLogGroups",
-      "ecr:GetRepositoryPolicy",
-      "ecr:SetRepositoryPolicy",
-      "elasticfilesystem:DescribeMountTargets",
-      "sqs:GetQueueAttributes",
-      "sqs:SetQueueAttributes",
-      "sns:GetTopicAttributes",
-      "sns:SetTopicAttributes",
-      "rds:AddTagsToResource",
-      "rds:CopyDBSnapshot",
-      "rds:CreateDBSnapshot",
-      "rds:DeleteDBInstance",
-      "rds:DeleteDBSnapshot",
-      "rds:DescribeDBEngineVersions",
-      "rds:DescribeDBInstances",
-      "rds:DescribeDBParameters",
-      "rds:DescribeDBSnapshotAttributes",
-      "rds:DescribeDBSnapshots",
-      "rds:RemoveTagsFromResource",
-      "iam:GenerateCredentialReport",
-      "iam:GetAccountSummary",
-      "iam:GetAccountPasswordPolicy",
-      "iam:GetCredentialReport",
-      "iam:GetGroup",
-      "iam:ListAccessKeys",
-      "iam:ListAccountAliases",
-      "iam:ListAttachedUserPolicies",
-      "iam:ListAttachedRolePolicies",
-      "iam:ListPolicyVersions",
-      "iam:ListGroupPolicies",
-      "iam:ListGroupsForUser",
-      "iam:ListMfaDevices",
-      "iam:ListPolicies",
-      "iam:ListRolePolicies",
-      "iam:ListVirtualMFADevices",
-      "iam:UpdateAccessKey",
-      "s3:ListAllMyBuckets",
-      "s3:ListBucket",
-      "s3:GetBucketPolicy",
-      "s3:GetObject",
-      "s3:GetBucketNotification",
-      "s3:GetBucketPolicy",
-      "s3:GetInventoryConfiguration",
-      "s3:PutBucketAcl",
-      "s3:PutBucketPolicy",
-      "s3:PutBucketVersioning",
-      "s3:PutBucketLogging",
-      "s3:PutBucketNotification",
-      "s3:PutInventoryConfiguration",
-      "s3:PutObject",
-      "cloudtrail:DescribeTrails",
-      "cloudtrail:GetEventSelectors",
-      "securityhub:BatchImportFindings",
-      "events:ListRules",
-      "tag:GetResources",
-      "lambda:ListFunctions"
-    ]
-    resources = ["*"]
-  }
-
-  statement {
-    actions = [
-      "logs:CreateLogGroup",
-    ]
-
-    resources = [
-      "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/custodian-*",
-      "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.name}/"
-    ]
-  }
-  statement {
-    actions = [
-      "logs:CreateLogStream",
-    ]
-
-    resources = [
-      "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/custodian-*:*",
-      "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.name}/*:*"
-    ]
-  }
-
-  statement {
-    actions = [
-      "logs:PutLogEvents",
-    ]
-
-    resources = [
-      "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/custodian-*:*:*",
-      "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.name}/*:*:*"
-    ]
-  }
-
-  statement {
-    actions = [
-      "sqs:GetQueueAttributes",
-      "sqs:GetQueueUrl",
-      "sqs:ListDeadLetterSourceQueues",
-      "sqs:ListQueues",
-      "sqs:ReceiveMessage",
-      "sqs:DeleteMessage",
-      "sqs:SendMessage"
-    ]
-
-    resources = [
-      aws_sqs_queue.standard.arn,
-      aws_sqs_queue.dlq.arn
-    ]
-  }
-
-  statement {
-    actions = [
-      "ses:SendEmail",
-      "ses:SendRawEmail"
-    ]
-
-    resources = [
-      var.ses_arn
-    ]
-  }
-}
-
 resource "aws_iam_policy" "lambda" {
+  count  = var.create_lambda_role ? 1 : 0
   name   = "${var.name}-lambda-execution"
   policy = data.aws_iam_policy_document.lambda_policy.json
 }
 
+resource "aws_iam_policy" "lambda_ses" {
+  count  = var.create_lambda_role && var.ses_arn != null ? 1 : 0
+  name   = "${var.name}-lambda-execution-ses"
+  policy = data.aws_iam_policy_document.lambda_policy_ses[0].json
+}
+
 resource "aws_iam_role_policy_attachment" "lambda" {
-  role       = aws_iam_role.lambda.name
-  policy_arn = aws_iam_policy.lambda.arn
+  count      = var.create_lambda_role ? 1 : 0
+  role       = aws_iam_role.lambda[0].name
+  policy_arn = aws_iam_policy.lambda[0].arn
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_ses" {
+  count      = var.create_lambda_role && var.ses_arn != null ? 1 : 0
+  role       = aws_iam_role.lambda[0].name
+  policy_arn = aws_iam_policy.lambda_ses[0].arn
 }
 
 resource "aws_iam_policy" "lambda_extra_policy" {
-  count  = var.lambda_extra_policy != null ? 1 : 0
+  count  = var.create_lambda_role && var.lambda_extra_policy != null ? 1 : 0
   name   = "${var.name}-lambda-extra-policy"
   policy = var.lambda_extra_policy
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_extra_policy_attachment" {
-  count      = var.lambda_extra_policy != null ? 1 : 0
-  role       = aws_iam_role.lambda.name
+  count      = var.create_lambda_role && var.lambda_extra_policy != null ? 1 : 0
+  role       = aws_iam_role.lambda[0].name
   policy_arn = aws_iam_policy.lambda_extra_policy[0].arn
 }
 
