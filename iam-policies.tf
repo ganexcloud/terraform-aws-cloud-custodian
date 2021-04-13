@@ -31,6 +31,7 @@ data "aws_iam_policy_document" "iam_policy" {
       "lambda:RemovePermission",
       "lambda:CreateAlias",
       "lambda:ListFunctions",
+      "lambda:GetPolicy",
       "logs:CreateLogStream",
       "logs:PutLogEvents",
       "logs:CreateLogGroup",
