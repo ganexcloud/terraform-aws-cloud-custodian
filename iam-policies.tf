@@ -71,10 +71,9 @@ data "aws_iam_policy_document" "iam_assume_role" {
   statement {
     effect  = "Allow"
     actions = ["sts:AssumeRole"]
-
     principals {
       type        = "AWS"
-      identifiers = ["arn:aws:iam::496610455293:user/cloud-custodian"]
+      identifiers = var.role_trusted_role_arns
     }
   }
 }

@@ -40,6 +40,12 @@ variable "lambda_extra_policy" {
   default     = null
 }
 
+variable "role_trusted_role_arns" {
+  description = "(Optional) Required if create_iam_role is true, ARNs of AWS entities who can assume these roles"
+  type        = list(string)
+  default     = []
+}
+
 variable "ses_arn" {
   description = "(Optional)SES domain ARN, used to send emails."
   type        = string

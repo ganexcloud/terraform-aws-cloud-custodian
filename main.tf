@@ -20,13 +20,14 @@ resource "aws_iam_user_policy" "this" {
 
 resource "aws_iam_policy" "user_extra_policy" {
   count  = var.create_iam_user && var.user_extra_policy != null ? 1 : 0
-  name   = "${var.name}-user-extra-policy"
+  name   = "${var.name}-extra-policy"
   policy = var.user_extra_policy
 }
 
 resource "aws_iam_policy_attachment" "user_extra_policy_attachment" {
   count      = var.create_iam_user && var.user_extra_policy != null ? 1 : 0
-  name       = aws_iam_user.this[0].name
+  name       = "${var.name}-extra-policy"
+  users      = ["${aws_iam_user.this[0].name}"]
   policy_arn = aws_iam_policy.user_extra_policy[0].arn
 }
 
