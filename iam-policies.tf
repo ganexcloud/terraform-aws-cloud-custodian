@@ -121,6 +121,7 @@ data "aws_iam_policy_document" "lambda_policy" {
       "ec2:CopySnapshot",
       "ec2:CreateSnapshot",
       "ec2:Describe*",
+      "elasticfilesystem:Describe*",
       "tag:TagResources",
       "tag:UntagResources",
       "waf-regional:AssociateWebACL",
@@ -193,7 +194,13 @@ data "aws_iam_policy_document" "lambda_policy" {
       "securityhub:BatchImportFindings",
       "events:ListRules",
       "tag:GetResources",
-      "lambda:ListFunctions"
+      "lambda:ListFunctions",
+      "dynamodb:List*",
+      "dynamodb:Describe*",
+      "kms:List*",
+      "kms:Describe*",
+      "route53:List*",
+      "route53:Get*"
     ]
     resources = ["*"]
   }
