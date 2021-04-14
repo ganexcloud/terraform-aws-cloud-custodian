@@ -41,6 +41,7 @@ data "aws_iam_policy_document" "iam_policy" {
     ]
     resources = ["*"]
   }
+
   statement {
     actions = [
       "s3:*"
@@ -185,20 +186,8 @@ data "aws_iam_policy_document" "lambda_policy" {
       "iam:ListRolePolicies",
       "iam:ListVirtualMFADevices",
       "iam:UpdateAccessKey",
-      "s3:ListAllMyBuckets",
-      "s3:ListBucket",
-      "s3:GetBucketPolicy",
-      "s3:GetObject",
-      "s3:GetBucketNotification",
-      "s3:GetBucketPolicy",
-      "s3:GetInventoryConfiguration",
-      "s3:PutBucketAcl",
-      "s3:PutBucketPolicy",
-      "s3:PutBucketVersioning",
-      "s3:PutBucketLogging",
-      "s3:PutBucketNotification",
-      "s3:PutInventoryConfiguration",
-      "s3:PutObject",
+      "s3:List*",
+      "s3:Get*",
       "cloudtrail:DescribeTrails",
       "cloudtrail:GetEventSelectors",
       "securityhub:BatchImportFindings",
@@ -255,6 +244,16 @@ data "aws_iam_policy_document" "lambda_policy" {
     resources = [
       aws_sqs_queue.standard.arn,
       aws_sqs_queue.dlq.arn
+    ]
+  }
+
+  statement {
+    actions = [
+      "s3:*"
+    ]
+    resources = [
+      "${aws_s3_bucket.this.arn}",
+      "${aws_s3_bucket.this.arn}/*"
     ]
   }
 
