@@ -56,3 +56,9 @@ variable "s3_bucket_name" {
   description = "(Required) S3 bucket name to store cloud-custodian logs."
   type        = string
 }
+
+variable "tags" {
+  type        = map(string)
+  description = "Additional Tags"
+  default     = {}
+}

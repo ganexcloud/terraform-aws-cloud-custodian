@@ -97,6 +97,7 @@ resource "aws_iam_role_policy_attachment" "lambda_extra_policy_attachment" {
 resource "aws_s3_bucket" "this" {
   bucket = var.s3_bucket_name
   acl    = "private"
+  tags   = var.tags
 }
 
 resource "aws_s3_bucket_public_access_block" "this" {
@@ -110,8 +111,10 @@ resource "aws_s3_bucket_public_access_block" "this" {
 # SQS
 resource "aws_sqs_queue" "standard" {
   name = "${var.name}-notifications"
+  tags = var.tags
 }
 
 resource "aws_sqs_queue" "dlq" {
   name = "${var.name}-notifications-dlq"
+  tags = var.tags
 }
