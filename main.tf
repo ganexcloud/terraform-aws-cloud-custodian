@@ -1,7 +1,7 @@
 # Iam User
 resource "aws_iam_user" "this" {
   count         = var.create_iam_user ? 1 : 0
-  name          = var.name
+  name          = "cloud-custodian"
   path          = "/"
   force_destroy = false
 }
@@ -13,20 +13,20 @@ resource "aws_iam_access_key" "this" {
 
 resource "aws_iam_user_policy" "this" {
   count  = var.create_iam_user ? 1 : 0
-  name   = var.name
-  user   = var.name
+  name   = "cloud-custodian"
+  user   = "cloud-custodian"
   policy = data.aws_iam_policy_document.iam_policy.json
 }
 
 resource "aws_iam_policy" "user_extra_policy" {
   count  = var.create_iam_user && var.user_extra_policy != null ? 1 : 0
-  name   = "${var.name}-extra-policy"
+  name   = "cloud-custodian-extra-policy"
   policy = var.user_extra_policy
 }
 
 resource "aws_iam_policy_attachment" "user_extra_policy_attachment" {
   count      = var.create_iam_user && var.user_extra_policy != null ? 1 : 0
-  name       = "${var.name}-extra-policy"
+  name       = "cloud-custodian-extra-policy"
   users      = ["${aws_iam_user.this[0].name}"]
   policy_arn = aws_iam_policy.user_extra_policy[0].arn
 }
@@ -34,13 +34,13 @@ resource "aws_iam_policy_attachment" "user_extra_policy_attachment" {
 # IAM Role
 resource "aws_iam_role" "this" {
   count              = var.create_iam_role ? 1 : 0
-  name               = var.name
+  name               = "cloud-custodian"
   assume_role_policy = data.aws_iam_policy_document.iam_assume_role.json
 }
 
 resource "aws_iam_policy" "this" {
   count  = var.create_iam_role ? 1 : 0
-  name   = var.name
+  name   = "cloud-custodian"
   policy = data.aws_iam_policy_document.iam_policy.json
 }
 
@@ -52,7 +52,7 @@ resource "aws_iam_role_policy_attachment" "this" {
 
 resource "aws_iam_policy" "role_extra_policy" {
   count  = var.create_iam_role && var.role_extra_policy != null ? 1 : 0
-  name   = "${var.name}-lambda-extra-policy"
+  name   = "cloud-custodian-lambda-extra-policy"
   policy = var.role_extra_policy
 }
 
@@ -65,13 +65,13 @@ resource "aws_iam_role_policy_attachment" "role_extra_policy_attachment" {
 # Lambda Role
 resource "aws_iam_role" "lambda" {
   count              = var.create_lambda_role ? 1 : 0
-  name               = "${var.name}-${data.aws_region.current.name}-lambdaRole"
+  name               = "cloud-custodian-lambdaRole"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
 }
 
 resource "aws_iam_policy" "lambda" {
   count  = var.create_lambda_role ? 1 : 0
-  name   = "${var.name}-lambda-execution"
+  name   = "cloud-custodian-lambda-execution"
   policy = data.aws_iam_policy_document.lambda_policy.json
 }
 
@@ -83,7 +83,7 @@ resource "aws_iam_role_policy_attachment" "lambda" {
 
 resource "aws_iam_policy" "lambda_extra_policy" {
   count  = var.create_lambda_role && var.lambda_extra_policy != null ? 1 : 0
-  name   = "${var.name}-lambda-extra-policy"
+  name   = "cloud-custodian-lambda-extra-policy"
   policy = var.lambda_extra_policy
 }
 
@@ -95,7 +95,7 @@ resource "aws_iam_role_policy_attachment" "lambda_extra_policy_attachment" {
 
 # S3
 resource "aws_s3_bucket" "this" {
-  bucket = var.s3_bucket_name
+  bucket = "${var.name}-${data.aws_region.current.name}"
   acl    = "private"
   tags   = var.tags
 }
@@ -110,11 +110,11 @@ resource "aws_s3_bucket_public_access_block" "this" {
 
 # SQS
 resource "aws_sqs_queue" "standard" {
-  name = "${var.name}-notifications"
+  name = "cloud-custodian-notifications"
   tags = var.tags
 }
 
 resource "aws_sqs_queue" "dlq" {
-  name = "${var.name}-notifications-dlq"
+  name = "cloud-custodian-notifications-dlq"
   tags = var.tags
 }

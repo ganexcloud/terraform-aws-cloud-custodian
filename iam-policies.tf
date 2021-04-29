@@ -47,8 +47,8 @@ data "aws_iam_policy_document" "iam_policy" {
       "s3:*"
     ]
     resources = [
-      "${aws_s3_bucket.this.arn}",
-      "${aws_s3_bucket.this.arn}/*"
+      "arn:aws:s3:::${var.name}*",
+      "arn:aws:s3:::${var.name}*/*"
     ]
   }
 
@@ -208,7 +208,7 @@ data "aws_iam_policy_document" "lambda_policy" {
 
     resources = [
       "arn:aws:logs::${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/custodian-*",
-      "arn:aws:logs::${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.name}/"
+      "arn:aws:logs::${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/cloud-custodian/"
     ]
   }
   statement {
@@ -218,7 +218,7 @@ data "aws_iam_policy_document" "lambda_policy" {
 
     resources = [
       "arn:aws:logs::${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/custodian-*:*",
-      "arn:aws:logs::${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.name}/*:*"
+      "arn:aws:logs::${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/cloud-custodian/*:*"
     ]
   }
 
@@ -229,7 +229,7 @@ data "aws_iam_policy_document" "lambda_policy" {
 
     resources = [
       "arn:aws:logs::${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/custodian-*:*:*",
-      "arn:aws:logs::${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.name}/*:*:*"
+      "arn:aws:logs::${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/cloud-custodian/*:*:*"
     ]
   }
 
@@ -245,8 +245,8 @@ data "aws_iam_policy_document" "lambda_policy" {
     ]
 
     resources = [
-      aws_sqs_queue.standard.arn,
-      aws_sqs_queue.dlq.arn
+      "arn:aws:sqs:*:${data.aws_caller_identity.current.account_id}:${aws_sqs_queue.standard.name}",
+      "arn:aws:sqs:*:${data.aws_caller_identity.current.account_id}:${aws_sqs_queue.dlq.name}"
     ]
   }
 
@@ -255,8 +255,8 @@ data "aws_iam_policy_document" "lambda_policy" {
       "s3:*"
     ]
     resources = [
-      "${aws_s3_bucket.this.arn}",
-      "${aws_s3_bucket.this.arn}/*"
+      "arn:aws:s3:::${var.name}*",
+      "arn:aws:s3:::${var.name}*/*"
     ]
   }
 
