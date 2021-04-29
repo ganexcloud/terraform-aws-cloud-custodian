@@ -207,8 +207,8 @@ data "aws_iam_policy_document" "lambda_policy" {
     ]
 
     resources = [
-      "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/custodian-*",
-      "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.name}/"
+      "arn:aws:logs::${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/custodian-*",
+      "arn:aws:logs::${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.name}/"
     ]
   }
   statement {
@@ -217,8 +217,8 @@ data "aws_iam_policy_document" "lambda_policy" {
     ]
 
     resources = [
-      "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/custodian-*:*",
-      "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.name}/*:*"
+      "arn:aws:logs::${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/custodian-*:*",
+      "arn:aws:logs::${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.name}/*:*"
     ]
   }
 
@@ -228,8 +228,8 @@ data "aws_iam_policy_document" "lambda_policy" {
     ]
 
     resources = [
-      "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/custodian-*:*:*",
-      "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.name}/*:*:*"
+      "arn:aws:logs::${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/custodian-*:*:*",
+      "arn:aws:logs::${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.name}/*:*:*"
     ]
   }
 
