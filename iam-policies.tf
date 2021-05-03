@@ -196,7 +196,9 @@ data "aws_iam_policy_document" "lambda_policy" {
       "kms:List*",
       "kms:Describe*",
       "route53:List*",
-      "route53:Get*"
+      "route53:Get*",
+      "elasticache:List*",
+      "elasticache:Describe*"
     ]
     resources = ["*"]
   }
@@ -207,8 +209,8 @@ data "aws_iam_policy_document" "lambda_policy" {
     ]
 
     resources = [
-      "arn:aws:logs::${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/custodian-*",
-      "arn:aws:logs::${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/cloud-custodian/"
+      "arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/custodian-*",
+      "arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:cloud-custodian*"
     ]
   }
   statement {
@@ -217,8 +219,8 @@ data "aws_iam_policy_document" "lambda_policy" {
     ]
 
     resources = [
-      "arn:aws:logs::${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/custodian-*:*",
-      "arn:aws:logs::${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/cloud-custodian/*:*"
+      "arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/custodian-*",
+      "arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:cloud-custodian*"
     ]
   }
 
@@ -228,8 +230,8 @@ data "aws_iam_policy_document" "lambda_policy" {
     ]
 
     resources = [
-      "arn:aws:logs::${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/custodian-*:*:*",
-      "arn:aws:logs::${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/cloud-custodian/*:*:*"
+      "arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/custodian-*:*:*",
+      "arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:cloud-custodian*:*:*"
     ]
   }
 
