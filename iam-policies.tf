@@ -133,9 +133,9 @@ data "aws_iam_policy_document" "lambda_policy" {
       "autoscaling:SuspendProcesses",
       "autoscaling:ResumeProcesses",
       "autoscaling:Describe*",
-      "cloudfront:GetDistributionConfig",
-      "cloudfront:GetStreamingDistributionConfig",
-      "cloudfront:UpdateStreamingDistribution",
+      "cloudfront:Get*",
+      "cloudfront:Describe*",
+      "cloudfront:ListDistributions",
       "waf:ListWebACLs",
       "cloudwatch:DeleteAlarms",
       "cloudwatch:DescribeAlarmsForMetric",
@@ -198,7 +198,9 @@ data "aws_iam_policy_document" "lambda_policy" {
       "route53:List*",
       "route53:Get*",
       "elasticache:List*",
-      "elasticache:Describe*"
+      "elasticache:Describe*",
+      "ecr:List*",
+      "ecr:Describe*"
     ]
     resources = ["*"]
   }
