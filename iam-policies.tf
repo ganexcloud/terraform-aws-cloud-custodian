@@ -166,6 +166,7 @@ data "aws_iam_policy_document" "lambda_policy" {
       "rds:DescribeDBSnapshotAttributes",
       "rds:DescribeDBSnapshots",
       "rds:RemoveTagsFromResource",
+      "rds:DescribeReservedDBInstances",
       "iam:GenerateCredentialReport",
       "iam:GetAccountSummary",
       "iam:GetAccountPasswordPolicy",
