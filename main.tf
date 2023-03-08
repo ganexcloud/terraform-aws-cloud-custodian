@@ -16,12 +16,14 @@ resource "aws_iam_user_policy" "this" {
   name   = "cloud-custodian"
   user   = "cloud-custodian"
   policy = data.aws_iam_policy_document.iam_policy.json
+  tags   = var.tags
 }
 
 resource "aws_iam_policy" "user_extra_policy" {
   count  = var.create_iam_user && var.user_extra_policy != null ? 1 : 0
   name   = "cloud-custodian-extra-policy"
   policy = var.user_extra_policy
+  tags   = var.tags
 }
 
 resource "aws_iam_policy_attachment" "user_extra_policy_attachment" {
@@ -42,6 +44,7 @@ resource "aws_iam_policy" "this" {
   count  = var.create_iam_role ? 1 : 0
   name   = "cloud-custodian"
   policy = data.aws_iam_policy_document.iam_policy.json
+  tags   = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "this" {
@@ -54,6 +57,7 @@ resource "aws_iam_policy" "role_extra_policy" {
   count  = var.create_iam_role && var.role_extra_policy != null ? 1 : 0
   name   = "cloud-custodian-lambda-extra-policy"
   policy = var.role_extra_policy
+  tags   = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "role_extra_policy_attachment" {
@@ -73,6 +77,7 @@ resource "aws_iam_policy" "lambda" {
   count  = var.create_lambda_role ? 1 : 0
   name   = "cloud-custodian-lambda-execution"
   policy = data.aws_iam_policy_document.lambda_policy.json
+  tags   = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "lambda" {
@@ -85,6 +90,7 @@ resource "aws_iam_policy" "lambda_extra_policy" {
   count  = var.create_lambda_role && var.lambda_extra_policy != null ? 1 : 0
   name   = "cloud-custodian-lambda-extra-policy"
   policy = var.lambda_extra_policy
+  tags   = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_extra_policy_attachment" {
