@@ -16,7 +16,6 @@ resource "aws_iam_user_policy" "this" {
   name   = "cloud-custodian"
   user   = "cloud-custodian"
   policy = data.aws_iam_policy_document.iam_policy.json
-  tags   = var.tags
 }
 
 resource "aws_iam_policy" "user_extra_policy" {
