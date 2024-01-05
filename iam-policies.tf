@@ -34,6 +34,7 @@ data "aws_iam_policy_document" "iam_policy" {
       "lambda:CreateAlias",
       "lambda:ListFunctions",
       "lambda:GetPolicy",
+      "lambda:GetFunctionConfiguration",
       "logs:CreateLogStream",
       "logs:PutLogEvents",
       "logs:CreateLogGroup",
