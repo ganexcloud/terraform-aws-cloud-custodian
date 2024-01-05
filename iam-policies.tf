@@ -149,6 +149,7 @@ data "aws_iam_policy_document" "lambda_policy" {
       "logs:TagLogGroup",
       "logs:UntagLogGroup",
       "logs:ListTagsLogGroup",
+      "logs:TagResource",
       "ecr:GetRepositoryPolicy",
       "ecr:SetRepositoryPolicy",
       "elasticfilesystem:DescribeMountTargets",
