@@ -215,7 +215,7 @@ data "aws_iam_policy_document" "lambda_policy" {
 
     resources = [
       "arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/custodian-*",
-      "arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/cloud-custodian-mailer"
+      "arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/cloud-custodian-mailer",
       "arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:cloud-custodian*"
     ]
   }
