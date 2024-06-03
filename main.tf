@@ -6,15 +6,27 @@ resource "aws_iam_user" "this" {
   force_destroy = false
 }
 
+resource "aws_iam_group" "this" {
+  count = var.create_iam_user ? 1 : 0
+  name  = "cloud-custodian"
+  path  = "/"
+}
+
+resource "aws_iam_group_membership" "this" {
+  count = var.create_iam_user ? 1 : 0
+  name  = "cloud-custodian"
+  users = [aws_iam_user.this[0].name]
+  group = aws_iam_group.this[0].name
+}
+
 resource "aws_iam_access_key" "this" {
   count = var.create_iam_user ? 1 : 0
   user  = aws_iam_user.this[0].name
 }
 
-resource "aws_iam_user_policy" "this" {
+resource "aws_iam_policy" "user" {
   count  = var.create_iam_user ? 1 : 0
   name   = "cloud-custodian"
-  user   = "cloud-custodian"
   policy = data.aws_iam_policy_document.iam_policy.json
 }
 
@@ -25,10 +37,15 @@ resource "aws_iam_policy" "user_extra_policy" {
   tags   = var.tags
 }
 
-resource "aws_iam_policy_attachment" "user_extra_policy_attachment" {
+resource "aws_iam_group_policy_attachment" "this" {
+  count      = var.create_iam_user ? 1 : 0
+  group      = aws_iam_group.this[0].name
+  policy_arn = aws_iam_policy.user[0].arn
+}
+
+resource "aws_iam_group_policy_attachment" "user_extra_policy_attachment" {
   count      = var.create_iam_user && var.user_extra_policy != null ? 1 : 0
-  name       = "cloud-custodian-extra-policy"
-  users      = ["${aws_iam_user.this[0].name}"]
+  group      = aws_iam_group.this[0].name
   policy_arn = aws_iam_policy.user_extra_policy[0].arn
 }
 
@@ -106,7 +123,7 @@ resource "aws_s3_bucket" "this" {
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
-        sse_algorithm     = "AES256"
+        sse_algorithm = "AES256"
       }
     }
   }
