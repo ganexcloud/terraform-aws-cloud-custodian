@@ -90,6 +90,16 @@ data "aws_iam_policy_document" "lambda_assume_role" {
       type        = "Service"
       identifiers = ["lambda.amazonaws.com"]
     }
+    condition {
+      test     = "StringLike"
+      variable = "aws:SourceArn"
+      values   = ["arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:custodian-*", "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:cloud-custodian-mailer"]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceAccount"
+      values   = [data.aws_caller_identity.current.account_id]
+    }
   }
 }
 
