@@ -57,3 +57,9 @@ variable "tags" {
   description = "Additional Tags"
   default     = {}
 }
+
+variable "s3_delete_objects_after" {
+  description = "(Required) Retention period in days to store logs."
+  default     = 365
+  type        = number
+}
