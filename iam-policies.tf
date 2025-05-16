@@ -213,7 +213,8 @@ data "aws_iam_policy_document" "lambda_policy" {
       "elasticache:List*",
       "elasticache:Describe*",
       "ecr:List*",
-      "ecr:Describe*"
+      "ecr:Describe*",
+      "ssm:DescribeParameters"
     ]
     resources = ["*"]
   }
