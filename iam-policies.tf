@@ -160,6 +160,7 @@ data "aws_iam_policy_document" "lambda_policy" {
       "logs:UntagLogGroup",
       "logs:ListTagsLogGroup",
       "logs:TagResource",
+      "logs:ListTagsForResource",
       "ecr:GetRepositoryPolicy",
       "ecr:SetRepositoryPolicy",
       "elasticfilesystem:DescribeMountTargets",
@@ -214,7 +215,10 @@ data "aws_iam_policy_document" "lambda_policy" {
       "elasticache:Describe*",
       "ecr:List*",
       "ecr:Describe*",
-      "ssm:DescribeParameters"
+      "ssm:DescribeParameters",
+      "events:ListTagsForResource",
+      "events:TagResource",
+      "events:UntagResource"
     ]
     resources = ["*"]
   }
