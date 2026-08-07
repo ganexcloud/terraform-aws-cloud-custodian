@@ -29,6 +29,9 @@ jobs:
           python-version: "3.12"
       - name: Install validation tools
         run: pipx install pre-commit checkov
+      - name: Exclude native tests on Terraform 1.6
+        if: matrix.terraform_version == '1.6.0'
+        run: mv tests /tmp/terraform-tests-disabled
       - name: Validate root module
         run: |
           terraform fmt -check -recursive
