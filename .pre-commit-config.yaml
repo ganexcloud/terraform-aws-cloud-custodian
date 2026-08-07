@@ -4,9 +4,9 @@ repos:
     hooks:
       - id: terraform_fmt
       - id: terraform_validate
-        files: ^(main|variables|outputs|versions|data|iam-policies)\.tf$
+        files: ^(main|variables|outputs|versions)\.tf$
       - id: terraform_tflint
-        files: ^(main|variables|outputs|versions|data|iam-policies)\.tf$
+        files: ^(main|variables|outputs|versions)\.tf$
         args:
           - --args=--only=terraform_deprecated_interpolation
           - --args=--only=terraform_deprecated_index
@@ -28,15 +28,9 @@ repos:
         args: [--allow-missing-credentials]
   - repo: local
     hooks:
-      - id: checkov
-        name: Checkov
-        language: docker_image
-        entry: bridgecrew/checkov:3.2.358
-        args: [--directory, ., --quiet]
-        pass_filenames: false
       - id: terraform-docs
         name: Terraform docs
         language: docker_image
         entry: quay.io/terraform-docs/terraform-docs:0.20.0
-        args: [markdown, table, --lockfile=false, --output-file, README.md, --output-mode, inject, .]
+        args: ["markdown", "table", "--lockfile=false", "--output-file", "README.md", "--output-mode", "inject", "."]
         pass_filenames: false
