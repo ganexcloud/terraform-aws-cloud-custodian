@@ -1,0 +1,48 @@
+name: Validate Terraform module
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        terraform_version: ["1.6.0", "1.15.8"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ matrix.terraform_version }}
+          terraform_wrapper: false
+      - uses: terraform-linters/setup-tflint@v6
+        with:
+          tflint_version: v0.58.0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install validation tools
+        run: pipx install pre-commit checkov
+      - name: Validate root module
+        run: |
+          terraform fmt -check -recursive
+          terraform init -backend=false
+          terraform validate
+          tflint --init
+          tflint --recursive
+          checkov -d . --quiet
+          pre-commit run --all-files
+      - name: Validate example
+        working-directory: examples/complete
+        run: |
+          terraform init -backend=false
+          terraform validate
+      - name: Run native tests
+        if: matrix.terraform_version == '1.15.8'
+        run: terraform test

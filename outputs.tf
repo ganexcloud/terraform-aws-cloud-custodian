@@ -1,30 +1,30 @@
 output "iam_user_arn" {
-  value       = join(",", aws_iam_user.this.*.arn)
+  value       = join(",", aws_iam_user.this[*].arn)
   description = "The ARN of IAM user."
 }
 
 output "iam_user_name" {
-  value       = join(",", aws_iam_user.this.*.name)
+  value       = join(",", aws_iam_user.this[*].name)
   description = "The Name of IAM user."
 }
 
 output "iam_role_arn" {
-  value       = join(",", aws_iam_role.this.*.arn)
+  value       = join(",", aws_iam_role.this[*].arn)
   description = "The ARN of Lambda IAM role "
 }
 
 output "iam_role_name" {
-  value       = join(",", aws_iam_role.this.*.name)
+  value       = join(",", aws_iam_role.this[*].name)
   description = "The Name of Lambda IAM role "
 }
 
 output "lambda_role_arn" {
-  value       = join(",", aws_iam_role.lambda.*.arn)
+  value       = join(",", aws_iam_role.lambda[*].arn)
   description = "The ARN of Lambda IAM role "
 }
 
 output "lambda_role_name" {
-  value       = join(",", aws_iam_role.lambda.*.name)
+  value       = join(",", aws_iam_role.lambda[*].name)
   description = "The Name of Lambda IAM role "
 }
 
