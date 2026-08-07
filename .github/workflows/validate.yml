@@ -32,10 +32,20 @@ jobs:
       - name: Exclude native tests on Terraform 1.6
         if: matrix.terraform_version == '1.6.0'
         run: mv tests /tmp/terraform-tests-disabled
+      - name: Install AWS provider locally for Terraform 1.6
+        if: matrix.terraform_version == '1.6.0'
+        run: |
+          mkdir -p /tmp/terraform-provider-plugins
+          curl -fsSL https://releases.hashicorp.com/terraform-provider-aws/6.58.0/terraform-provider-aws_6.58.0_linux_amd64.zip -o /tmp/aws-provider.zip
+          unzip -q /tmp/aws-provider.zip -d /tmp/terraform-provider-plugins
       - name: Validate root module
         run: |
           terraform fmt -check -recursive
-          terraform init -backend=false
+          if [ "${{ matrix.terraform_version }}" = "1.6.0" ]; then
+            terraform init -backend=false -plugin-dir=/tmp/terraform-provider-plugins
+          else
+            terraform init -backend=false
+          fi
           terraform validate
           tflint --init
           tflint --recursive
