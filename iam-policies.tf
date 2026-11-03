@@ -51,7 +51,7 @@ data "aws_iam_policy_document" "iam_policy" {
   }
 
   dynamic "statement" {
-    for_each = var.ses_arn != null ? list(1) : []
+    for_each = var.ses_arn != null ? [1] : []
 
     content {
       actions = [
@@ -261,7 +261,7 @@ data "aws_iam_policy_document" "lambda_policy" {
   }
 
   dynamic "statement" {
-    for_each = var.ses_arn != null ? list(1) : []
+    for_each = var.ses_arn != null ? [1] : []
 
     content {
       actions = [
