@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.1](https://github.com/ganexcloud/terraform-aws-cloud-custodian/compare/v1.0.0...v1.0.1) (2026-11-03)
+
+### Bug Fixes
+
+* **iam:** restore optional ses policy compatibility ([#4](https://github.com/ganexcloud/terraform-aws-cloud-custodian/issues/4)) ([5741891](https://github.com/ganexcloud/terraform-aws-cloud-custodian/commit/57418911df2607c358e390ce51f1592b066a977a))
+
 ## [1.0.0](https://github.com/ganexcloud/terraform-aws-cloud-custodian/compare/v0.1.0...v1.0.0) (2026-08-07)
 
 ### ⚠ BREAKING CHANGES
